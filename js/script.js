@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchForm =
         document.getElementById("searchForm");
 
-
     if (searchForm) {
 
         searchForm.addEventListener(
@@ -24,29 +23,19 @@ document.addEventListener("DOMContentLoaded", function () {
             function (event) {
 
                 const from =
-                    document
-                        .getElementById("from")
-                        .value
-                        .trim();
-
+                    document.getElementById("from")
+                        .value.trim();
 
                 const to =
-                    document
-                        .getElementById("to")
-                        .value
-                        .trim();
-
+                    document.getElementById("to")
+                        .value.trim();
 
                 const date =
-                    document
-                        .getElementById("date")
-                        .value
-                        .trim();
-
+                    document.getElementById("date")
+                        .value.trim();
 
                 const errorBox =
                     document.getElementById("searchError");
-
 
                 let errorMessage = "";
 
@@ -102,14 +91,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     const parts =
                         date.split("/");
 
-
                     const day =
                         parseInt(parts[0]);
 
-
                     const month =
                         parseInt(parts[1]);
-
 
                     const year =
                         parseInt(parts[2]);
@@ -150,18 +136,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         const today =
                             new Date();
 
-
-                        /*
-                         * Compare calendar dates only
-                         */
-
                         today.setHours(
                             0,
                             0,
                             0,
                             0
                         );
-
 
                         selectedDate.setHours(
                             0,
@@ -175,9 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
                          * Reject past dates
                          */
 
-                        if (
-                            selectedDate < today
-                        ) {
+                        if (selectedDate < today) {
 
                             errorMessage =
                                 "Departure date cannot be in the past.";
@@ -190,8 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 /*
-                 * Stop submission if
-                 * validation fails
+                 * Stop submission if validation fails
                  */
 
                 if (errorMessage !== "") {
@@ -228,6 +205,360 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /*
  * =========================================
+ * City Autocomplete
+ * =========================================
+ */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /*
+     * Available cities for the prototype.
+     *
+     * The array can easily be expanded
+     * when more routes are added.
+     */
+
+    const cities = [
+        "Sydney",
+        "Melbourne",
+        "Brisbane",
+        "Gold Coast",
+        "Adelaide",
+        "Perth",
+        "Canberra",
+        "Hobart",
+        "Darwin",
+        "Singapore"
+    ];
+
+
+    const fromInput =
+        document.getElementById("from");
+
+    const toInput =
+        document.getElementById("to");
+
+
+    /*
+     * Autocomplete only runs
+     * on pages containing the search form
+     */
+
+    if (!fromInput || !toInput) {
+        return;
+    }
+
+
+    function createAutocomplete(input) {
+
+        /*
+         * Create the suggestion box
+         * using JavaScript
+         */
+
+        const suggestionBox =
+            document.createElement("div");
+
+
+        suggestionBox.className =
+            "autocomplete-list";
+
+
+        /*
+         * Position the list underneath
+         * the input field
+         */
+
+        suggestionBox.style.display =
+            "none";
+
+        suggestionBox.style.position =
+            "absolute";
+
+        suggestionBox.style.left =
+            "0";
+
+        suggestionBox.style.right =
+            "0";
+
+        suggestionBox.style.top =
+            "100%";
+
+        suggestionBox.style.background =
+            "white";
+
+        suggestionBox.style.border =
+            "1px solid #ccc";
+
+        suggestionBox.style.borderTop =
+            "none";
+
+        suggestionBox.style.borderRadius =
+            "0 0 5px 5px";
+
+        suggestionBox.style.zIndex =
+            "1000";
+
+        suggestionBox.style.maxHeight =
+            "220px";
+
+        suggestionBox.style.overflowY =
+            "auto";
+
+        suggestionBox.style.boxShadow =
+            "0 4px 8px rgba(0, 0, 0, 0.10)";
+
+
+        /*
+         * Use the input's form-group
+         * as the positioning container
+         */
+
+        const container =
+            input.parentElement;
+
+        container.style.position =
+            "relative";
+
+        container.appendChild(
+            suggestionBox
+        );
+
+
+        /*
+         * Close the suggestion list
+         */
+
+        function closeSuggestions() {
+
+            suggestionBox.innerHTML = "";
+
+            suggestionBox.style.display =
+                "none";
+
+        }
+
+
+        /*
+         * Create the visible suggestions
+         */
+
+        function showSuggestions() {
+
+            const searchText =
+                input.value
+                    .trim()
+                    .toLowerCase();
+
+
+            /*
+             * Do not show the complete city
+             * list when nothing has been typed
+             */
+
+            if (searchText === "") {
+
+                closeSuggestions();
+
+                return;
+
+            }
+
+
+            /*
+             * FILTER ALGORITHM
+             *
+             * Keep cities containing the
+             * user's search text.
+             *
+             * Example:
+             * "mel" -> Melbourne
+             */
+
+            const matches =
+                cities.filter(
+                    function (city) {
+
+                        return city
+                            .toLowerCase()
+                            .includes(searchText);
+
+                    }
+                );
+
+
+            suggestionBox.innerHTML = "";
+
+
+            /*
+             * No matching city
+             */
+
+            if (matches.length === 0) {
+
+                const noResult =
+                    document.createElement("div");
+
+                noResult.textContent =
+                    "No matching city";
+
+                noResult.style.padding =
+                    "10px 12px";
+
+                noResult.style.color =
+                    "#777";
+
+                noResult.style.fontSize =
+                    "14px";
+
+                suggestionBox.appendChild(
+                    noResult
+                );
+
+                suggestionBox.style.display =
+                    "block";
+
+                return;
+
+            }
+
+
+            /*
+             * Create a suggestion element
+             * for every matching city
+             */
+
+            matches.forEach(
+                function (city) {
+
+                    const item =
+                        document.createElement("div");
+
+
+                    item.textContent =
+                        city;
+
+
+                    item.style.padding =
+                        "10px 12px";
+
+
+                    item.style.cursor =
+                        "pointer";
+
+
+                    item.style.borderBottom =
+                        "1px solid #eee";
+
+
+                    /*
+                     * Mouse hover feedback
+                     */
+
+                    item.addEventListener(
+                        "mouseenter",
+                        function () {
+
+                            item.style.background =
+                                "#f1f6fc";
+
+                        }
+                    );
+
+
+                    item.addEventListener(
+                        "mouseleave",
+                        function () {
+
+                            item.style.background =
+                                "white";
+
+                        }
+                    );
+
+
+                    /*
+                     * Select a city
+                     */
+
+                    item.addEventListener(
+                        "mousedown",
+                        function (event) {
+
+                            /*
+                             * Prevent the input losing
+                             * focus before selection
+                             */
+
+                            event.preventDefault();
+
+                            input.value =
+                                city;
+
+                            closeSuggestions();
+
+                        }
+                    );
+
+
+                    suggestionBox.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+
+            suggestionBox.style.display =
+                "block";
+
+        }
+
+
+        /*
+         * Update suggestions every time
+         * the user types
+         */
+
+        input.addEventListener(
+            "input",
+            showSuggestions
+        );
+
+
+        /*
+         * Close when input loses focus
+         */
+
+        input.addEventListener(
+            "blur",
+            function () {
+
+                setTimeout(
+                    closeSuggestions,
+                    150
+                );
+
+            }
+        );
+
+    }
+
+
+    /*
+     * Enable autocomplete for
+     * both From and To
+     */
+
+    createAutocomplete(fromInput);
+
+    createAutocomplete(toInput);
+
+});
+
+
+/*
+ * =========================================
  * Popular Deals Interaction
  * =========================================
  */
@@ -239,27 +570,18 @@ document.addEventListener("DOMContentLoaded", function () {
             ".popular-deal"
         );
 
-
     const fromInput =
         document.getElementById("from");
-
 
     const toInput =
         document.getElementById("to");
 
-
     const dateInput =
         document.getElementById("date");
-
 
     const errorBox =
         document.getElementById("searchError");
 
-
-    /*
-     * Popular deals only exist
-     * on the home page
-     */
 
     if (
         popularDeals.length === 0 ||
@@ -277,14 +599,13 @@ document.addEventListener("DOMContentLoaded", function () {
         function (deal) {
 
             /*
-             * Make the card keyboard accessible
+             * Keyboard accessibility
              */
 
             deal.setAttribute(
                 "tabindex",
                 "0"
             );
-
 
             deal.setAttribute(
                 "role",
@@ -301,7 +622,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 const departure =
                     deal.dataset.from;
 
-
                 const destination =
                     deal.dataset.to;
 
@@ -309,14 +629,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 fromInput.value =
                     departure;
 
-
                 toInput.value =
                     destination;
 
 
                 /*
-                 * Remove previous
-                 * validation message
+                 * Remove previous validation error
                  */
 
                 if (errorBox) {
@@ -330,17 +648,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 /*
-                 * Move the user directly
-                 * to the date field
+                 * Move directly to date
                  */
 
                 dateInput.focus();
 
-
-                /*
-                 * Smoothly move search form
-                 * into view if necessary
-                 */
 
                 document
                     .querySelector(".search-box")
@@ -364,9 +676,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             /*
              * Keyboard interaction
-             *
-             * Enter or Space can also
-             * select the route
              */
 
             deal.addEventListener(
@@ -404,18 +713,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const sortSelect =
         document.getElementById("sortFlights");
 
-
     const stopsSelect =
         document.getElementById("filterStops");
-
 
     const flightList =
         document.getElementById("flightList");
 
-
     const flightCount =
         document.getElementById("flightCount");
-
 
     const noFilterResults =
         document.getElementById("noFilterResults");
@@ -442,7 +747,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const sortValue =
             sortSelect.value;
 
-
         const stopsValue =
             stopsSelect.value;
 
@@ -468,18 +772,14 @@ document.addEventListener("DOMContentLoaded", function () {
                             .toLowerCase();
 
 
-                    if (
-                        stopsValue === "all"
-                    ) {
+                    if (stopsValue === "all") {
 
                         return true;
 
                     }
 
 
-                    if (
-                        stopsValue === "direct"
-                    ) {
+                    if (stopsValue === "direct") {
 
                         return (
                             stops === "direct" ||
@@ -490,9 +790,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
 
-                    if (
-                        stopsValue === "1"
-                    ) {
+                    if (stopsValue === "1") {
 
                         return (
                             stops === "1" ||
@@ -520,18 +818,15 @@ document.addEventListener("DOMContentLoaded", function () {
                         a.dataset.price
                     );
 
-
                 const priceB =
                     parseFloat(
                         b.dataset.price
                     );
 
-
                 const departureA =
                     parseInt(
                         a.dataset.departure
                     );
-
 
                 const departureB =
                     parseInt(
@@ -539,18 +834,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
 
-                if (
-                    sortValue === "price-low"
-                ) {
+                if (sortValue === "price-low") {
 
                     return priceA - priceB;
 
                 }
 
 
-                if (
-                    sortValue === "price-high"
-                ) {
+                if (sortValue === "price-high") {
 
                     return priceB - priceA;
 
@@ -605,7 +896,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         /*
          * Display filtered flights
-         * in sorted order
+         * using Stage 6 CSS Grid layout
          */
 
         visibleFlights.forEach(
@@ -613,7 +904,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 flight.style.display =
                     "grid";
-
 
                 flightList.appendChild(
                     flight
