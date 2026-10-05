@@ -2,32 +2,7 @@
 
 session_start();
 
-require "../config/database.php";
-
-
-if (!isset($_SESSION["user_id"])) {
-
-    header("Location: ../login.php");
-    exit;
-
-}
-
-
-if ($_SESSION["user_role"] != "admin") {
-
-    header("Location: ../index.php");
-    exit;
-
-}
-
-
-$sql = "SELECT * FROM flights
-        ORDER BY DepartureDate ASC,
-        DepartureTime ASC";
-
-$stmt = $pdo->query($sql);
-
-$flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+require "config/database.php";
 
 ?>
 
@@ -41,10 +16,10 @@ $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Admin Dashboard - TravelEase</title>
+    <title>TravelEase - Flight Booking</title>
 
     <link rel="stylesheet"
-          href="../css/style.css">
+          href="css/style.css">
 
 </head>
 
@@ -55,159 +30,221 @@ $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <header>
 
     <div class="logo">
-        TravelEase Admin
+        TravelEase
     </div>
 
     <nav>
 
-        <a href="../index.php">
-            Customer Site
+        <a href="index.php">
+            Home
         </a>
 
         <a href="index.php">
-            Flights
+            Search Flights
         </a>
 
-        <a href="add-flight.php">
-            Add Flight
+        <a href="my-bookings.php">
+            My Bookings
         </a>
 
-        <span>
-            Welcome,
-            <?= htmlspecialchars($_SESSION["user_name"]) ?>
-        </span>
 
-        <a href="../logout.php">
-            Logout
-        </a>
+        <?php if (isset($_SESSION["user_id"])): ?>
+
+            <span>
+                Welcome,
+                <?= htmlspecialchars($_SESSION["user_name"]) ?>
+            </span>
+
+            <a href="logout.php">
+                Logout
+            </a>
+
+        <?php else: ?>
+
+            <a href="login.php">
+                Login
+            </a>
+
+            <a href="register.php">
+                Register
+            </a>
+
+        <?php endif; ?>
 
     </nav>
 
 </header>
 
 
-<section class="deals">
+<section class="hero">
 
     <h1>
-        Admin Dashboard
+        Find Your Next Flight
     </h1>
 
     <p>
-        Manage TravelEase flights.
+        Search, compare and book flights easily with TravelEase.
     </p>
 
-
-    <p>
-
-        <a href="add-flight.php">
-
-            <button type="button">
-                Add New Flight
-            </button>
-
-        </a>
-
-    </p>
+</section>
 
 
-    <?php foreach ($flights as $flight): ?>
+<section class="search-box">
+
+    <form class="search-form"
+          id="searchForm"
+          action="results.php"
+          method="GET"
+          novalidate>
 
 
-        <div class="deal-card"
-             style="margin-bottom: 20px;">
+        <div class="form-group">
 
+            <label for="from">
+                From
+            </label>
 
-            <h2>
-
-                <?= htmlspecialchars($flight["FlightNumber"]) ?>
-
-            </h2>
-
-
-            <p>
-
-                <?= htmlspecialchars($flight["Departure"]) ?>
-
-                →
-
-                <?= htmlspecialchars($flight["Destination"]) ?>
-
-            </p>
-
-
-            <p>
-
-                <strong>Date:</strong>
-
-                <?= date(
-                    "d/m/Y",
-                    strtotime($flight["DepartureDate"])
-                ) ?>
-
-            </p>
-
-
-            <p>
-
-                <strong>Departure:</strong>
-
-                <?= htmlspecialchars($flight["DepartureTime"]) ?>
-
-            </p>
-
-
-            <p>
-
-                <strong>Arrival:</strong>
-
-                <?= htmlspecialchars($flight["ArrivalTime"]) ?>
-
-            </p>
-
-
-            <p>
-
-                <strong>Price:</strong>
-
-                $<?= htmlspecialchars($flight["Price"]) ?>
-
-            </p>
-
-
-            <p>
-
-                <strong>Available Seats:</strong>
-
-                <?= htmlspecialchars($flight["AvailableSeats"]) ?>
-
-            </p>
-
-
-            <a href="edit-flight.php?id=<?= $flight["FlightID"] ?>">
-
-                <button type="button">
-                    Edit
-                </button>
-
-            </a>
-
-
-            <a href="delete-flight.php?id=<?= $flight["FlightID"] ?>">
-
-                <button type="button">
-                    Delete
-                </button>
-
-            </a>
-
+            <input
+                type="text"
+                id="from"
+                name="from"
+                placeholder="Sydney"
+            >
 
         </div>
 
 
-    <?php endforeach; ?>
+        <div class="form-group">
 
+            <label for="to">
+                To
+            </label>
+
+            <input
+                type="text"
+                id="to"
+                name="to"
+                placeholder="Melbourne"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="date">
+                Departure Date
+            </label>
+
+            <input
+                type="text"
+                id="date"
+                name="date"
+                placeholder="DD/MM/YYYY"
+            >
+
+        </div>
+
+
+        <button type="submit">
+            Search Flights
+        </button>
+
+    </form>
+
+
+    <div id="searchError"
+         style="
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            background: #ffebee;
+            border: 1px solid #ef9a9a;
+            border-radius: 5px;
+            color: #b71c1c;
+         ">
+    </div>
 
 </section>
+
+
+<section class="deals">
+
+    <h2>
+        Popular Deals
+    </h2>
+
+    <p>
+        Select a popular route to start your search.
+    </p>
+
+
+    <div class="deal-container">
+
+
+        <div class="deal-card popular-deal"
+             data-from="Sydney"
+             data-to="Melbourne">
+
+            <h3>
+                Sydney → Melbourne
+            </h3>
+
+            <p>
+                Direct flight
+            </p>
+
+            <div class="price">
+                From $139
+            </div>
+
+        </div>
+
+
+        <div class="deal-card popular-deal"
+             data-from="Sydney"
+             data-to="Gold Coast">
+
+            <h3>
+                Sydney → Gold Coast
+            </h3>
+
+            <p>
+                Direct flight
+            </p>
+
+            <div class="price">
+                From $149
+            </div>
+
+        </div>
+
+
+        <div class="deal-card popular-deal"
+             data-from="Sydney"
+             data-to="Singapore">
+
+            <h3>
+                Sydney → Singapore
+            </h3>
+
+            <p>
+                International flight
+            </p>
+
+            <div class="price">
+                From $699
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<script src="js/script.js"></script>
 
 
 </body>

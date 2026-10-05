@@ -19,11 +19,9 @@ if ($from != "" && $to != "" && $dateInput != "") {
         $dateInput
     );
 
-
     if ($dateObject) {
 
         $date = $dateObject->format("Y-m-d");
-
 
         $sql = "SELECT * FROM flights
                 WHERE Departure = ?
@@ -31,9 +29,7 @@ if ($from != "" && $to != "" && $dateInput != "") {
                 AND DepartureDate = ?
                 ORDER BY Price ASC";
 
-
         $stmt = $pdo->prepare($sql);
-
 
         $stmt->execute([
             $from,
@@ -41,13 +37,10 @@ if ($from != "" && $to != "" && $dateInput != "") {
             $date
         ]);
 
-
         $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $searched = true;
-
     }
-
 }
 
 ?>
@@ -79,7 +72,6 @@ if ($from != "" && $to != "" && $dateInput != "") {
         TravelEase
     </div>
 
-
     <nav>
 
         <a href="index.php">
@@ -98,16 +90,13 @@ if ($from != "" && $to != "" && $dateInput != "") {
         <?php if (isset($_SESSION["user_id"])): ?>
 
             <span>
-
                 Welcome,
                 <?= htmlspecialchars($_SESSION["user_name"]) ?>
-
             </span>
 
             <a href="logout.php">
                 Logout
             </a>
-
 
         <?php else: ?>
 
@@ -121,7 +110,6 @@ if ($from != "" && $to != "" && $dateInput != "") {
 
         <?php endif; ?>
 
-
     </nav>
 
 </header>
@@ -130,9 +118,49 @@ if ($from != "" && $to != "" && $dateInput != "") {
 <section class="deals">
 
 
-    <h1>
-        Flight Results
-    </h1>
+    <div class="results-heading">
+
+        <div>
+
+            <h1>
+                Flight Results
+            </h1>
+
+            <?php if ($searched): ?>
+
+                <p class="route-summary">
+
+                    <?= htmlspecialchars($from) ?>
+
+                    →
+
+                    <?= htmlspecialchars($to) ?>
+
+                    <span class="route-divider">
+                        |
+                    </span>
+
+                    <?= htmlspecialchars($dateInput) ?>
+
+                </p>
+
+            <?php endif; ?>
+
+        </div>
+
+
+        <?php if ($searched): ?>
+
+            <a href="index.php"
+               class="change-search-link">
+
+                Change Search
+
+            </a>
+
+        <?php endif; ?>
+
+    </div>
 
 
     <?php if (!$searched): ?>
@@ -158,25 +186,10 @@ if ($from != "" && $to != "" && $dateInput != "") {
     <?php else: ?>
 
 
-        <p>
-
-            <?= htmlspecialchars($from) ?>
-
-            →
-
-            <?= htmlspecialchars($to) ?>
-
-            |
-
-            <?= htmlspecialchars($dateInput) ?>
-
-        </p>
-
-
         <?php if (count($flights) > 0): ?>
 
 
-            <!-- Filter and Sort Controls -->
+            <!-- Filter and Sort -->
 
             <div class="filter-box">
 
@@ -234,7 +247,6 @@ if ($from != "" && $to != "" && $dateInput != "") {
 
                 </div>
 
-
             </div>
 
 
@@ -245,7 +257,7 @@ if ($from != "" && $to != "" && $dateInput != "") {
             </p>
 
 
-            <!-- Flight Cards -->
+            <!-- Flight List -->
 
             <div id="flightList">
 
@@ -258,96 +270,271 @@ if ($from != "" && $to != "" && $dateInput != "") {
                     $departureTimestamp =
                         strtotime($flight["DepartureTime"]);
 
+
+                    $departureDisplay =
+                        date(
+                            "H:i",
+                            strtotime($flight["DepartureTime"])
+                        );
+
+
+                    $arrivalDisplay =
+                        date(
+                            "H:i",
+                            strtotime($flight["ArrivalTime"])
+                        );
+
+
+                    /*
+                     * Calculate flight duration
+                     */
+
+                    $departureTime =
+                        strtotime($flight["DepartureTime"]);
+
+                    $arrivalTime =
+                        strtotime($flight["ArrivalTime"]);
+
+
+                    /*
+                     * Handle flights arriving
+                     * after midnight
+                     */
+
+                    if ($arrivalTime < $departureTime) {
+
+                        $arrivalTime += 86400;
+
+                    }
+
+
+                    $durationMinutes =
+                        round(
+                            ($arrivalTime - $departureTime) / 60
+                        );
+
+
+                    $durationHours =
+                        floor($durationMinutes / 60);
+
+
+                    $remainingMinutes =
+                        $durationMinutes % 60;
+
+
+                    $durationDisplay =
+                        $durationHours . "h " .
+                        $remainingMinutes . "m";
+
+
+                    /*
+                     * Display zero stops as Direct
+                     */
+
+                    $stopsValue =
+                        strtolower(
+                            trim($flight["Stops"])
+                        );
+
+
+                    if (
+                        $stopsValue === "0" ||
+                        $stopsValue === "0 stops" ||
+                        $stopsValue === "direct"
+                    ) {
+
+                        $stopsDisplay = "Direct";
+
+                    } else {
+
+                        $stopsDisplay =
+                            htmlspecialchars(
+                                $flight["Stops"]
+                            );
+
+                    }
+
                     ?>
 
 
-                    <div class="deal-card flight-card"
+                    <div class="flight-card"
 
-                         data-price="<?= htmlspecialchars($flight["Price"]) ?>"
+                         data-price="<?= htmlspecialchars(
+                             $flight["Price"]
+                         ) ?>"
 
                          data-departure="<?= $departureTimestamp ?>"
 
-                         data-stops="<?= htmlspecialchars($flight["Stops"]) ?>">
+                         data-stops="<?= htmlspecialchars(
+                             $flight["Stops"]
+                         ) ?>">
 
 
-                        <h2>
-                            <?= htmlspecialchars($flight["FlightNumber"]) ?>
-                        </h2>
+                        <!-- Flight Number -->
 
+                        <div class="flight-number">
 
-                        <p>
+                            <span class="small-label">
+                                Flight
+                            </span>
 
-                            <?= htmlspecialchars($flight["Departure"]) ?>
-
-                            →
-
-                            <?= htmlspecialchars($flight["Destination"]) ?>
-
-                        </p>
-
-
-                        <p>
-
-                            <strong>Departure:</strong>
-
-                            <?= htmlspecialchars($flight["DepartureTime"]) ?>
-
-                        </p>
-
-
-                        <p>
-
-                            <strong>Arrival:</strong>
-
-                            <?= htmlspecialchars($flight["ArrivalTime"]) ?>
-
-                        </p>
-
-
-                        <p>
-
-                            <strong>Stops:</strong>
-
-                            <?= htmlspecialchars($flight["Stops"]) ?>
-
-                        </p>
-
-
-                        <p>
-
-                            <strong>Baggage:</strong>
-
-                            <?= htmlspecialchars($flight["Baggage"]) ?>
-
-                        </p>
-
-
-                        <p>
-
-                            <strong>Available Seats:</strong>
-
-                            <?= htmlspecialchars($flight["AvailableSeats"]) ?>
-
-                        </p>
-
-
-                        <div class="price">
-
-                            $<?= htmlspecialchars($flight["Price"]) ?>
+                            <strong>
+                                <?= htmlspecialchars(
+                                    $flight["FlightNumber"]
+                                ) ?>
+                            </strong>
 
                         </div>
 
 
-                        <br>
+                        <!-- Departure -->
+
+                        <div class="flight-location">
+
+                            <span class="city-name">
+
+                                <?= htmlspecialchars(
+                                    $flight["Departure"]
+                                ) ?>
+
+                            </span>
+
+                            <span class="location-time">
+
+                                <?= $departureDisplay ?>
+
+                            </span>
+
+                        </div>
 
 
-                        <a href="booking.php?flight_id=<?= $flight["FlightID"] ?>">
+                        <!-- Route -->
 
-                            <button type="button">
-                                Book Now
-                            </button>
+                        <div class="flight-route">
 
-                        </a>
+                            <span class="duration">
+
+                                <?= $durationDisplay ?>
+
+                            </span>
+
+
+                            <div class="route-line">
+
+                                <span class="route-dot"></span>
+
+                                <span class="route-track"></span>
+
+                                <span class="route-arrow">
+                                    ›
+                                </span>
+
+                            </div>
+
+
+                            <span class="stops-text">
+
+                                <?= $stopsDisplay ?>
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- Arrival -->
+
+                        <div class="flight-location">
+
+                            <span class="city-name">
+
+                                <?= htmlspecialchars(
+                                    $flight["Destination"]
+                                ) ?>
+
+                            </span>
+
+                            <span class="location-time">
+
+                                <?= $arrivalDisplay ?>
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- Baggage -->
+
+                        <div class="baggage-info">
+
+                            <span class="small-label">
+                                Baggage
+                            </span>
+
+                            <strong>
+
+                                <?= htmlspecialchars(
+                                    $flight["Baggage"]
+                                ) ?>
+
+                            </strong>
+
+                        </div>
+
+
+                        <!-- Seats -->
+
+                        <div class="seat-info">
+
+                            <span class="small-label">
+                                Seats
+                            </span>
+
+                            <strong>
+
+                                <?= htmlspecialchars(
+                                    $flight["AvailableSeats"]
+                                ) ?>
+
+                            </strong>
+
+                        </div>
+
+
+                        <!-- Price -->
+
+                        <div class="flight-price">
+
+                            <span class="small-label">
+                                From
+                            </span>
+
+                            <strong>
+
+                                $<?= number_format(
+                                    (float) $flight["Price"],
+                                    2
+                                ) ?>
+
+                            </strong>
+
+                        </div>
+
+
+                        <!-- Booking -->
+
+                        <div class="flight-action">
+
+                            <a href="booking.php?flight_id=<?= $flight["FlightID"] ?>">
+
+                                <button type="button">
+
+                                    Book Now
+
+                                </button>
+
+                            </a>
+
+                        </div>
 
 
                     </div>

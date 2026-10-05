@@ -23,7 +23,9 @@ require "config/database.php";
 
 </head>
 
+
 <body>
+
 
 <header>
 
@@ -76,7 +78,9 @@ require "config/database.php";
 
 <section class="hero">
 
-    <h1>Find Your Next Flight</h1>
+    <h1>
+        Find Your Next Flight
+    </h1>
 
     <p>
         Search, compare and book flights easily with TravelEase.
@@ -87,11 +91,13 @@ require "config/database.php";
 
 <section class="search-box">
 
-    <form class="search-form"
-          id="searchForm"
-          action="results.php"
-          method="GET"
-          novalidate>
+    <form
+        class="search-form"
+        id="searchForm"
+        action="results.php"
+        method="GET"
+        novalidate
+    >
 
 
         <div class="form-group">
@@ -146,12 +152,14 @@ require "config/database.php";
             Search Flights
         </button>
 
-
     </form>
 
 
-    <div id="searchError"
-         style="
+    <!-- JavaScript validation message -->
+
+    <div
+        id="searchError"
+        style="
             display: none;
             margin-top: 15px;
             padding: 12px;
@@ -159,7 +167,8 @@ require "config/database.php";
             border: 1px solid #ef9a9a;
             border-radius: 5px;
             color: #b71c1c;
-         ">
+        "
+    >
     </div>
 
 </section>
@@ -175,7 +184,13 @@ require "config/database.php";
     <div class="deal-container">
 
 
-        <div class="deal-card">
+        <!-- Sydney to Melbourne -->
+
+        <div
+            class="deal-card popular-deal"
+            data-from="Sydney"
+            data-to="Melbourne"
+        >
 
             <h3>
                 Sydney → Melbourne
@@ -192,7 +207,13 @@ require "config/database.php";
         </div>
 
 
-        <div class="deal-card">
+        <!-- Sydney to Gold Coast -->
+
+        <div
+            class="deal-card popular-deal"
+            data-from="Sydney"
+            data-to="Gold Coast"
+        >
 
             <h3>
                 Sydney → Gold Coast
@@ -209,7 +230,13 @@ require "config/database.php";
         </div>
 
 
-        <div class="deal-card">
+        <!-- Sydney to Singapore -->
+
+        <div
+            class="deal-card popular-deal"
+            data-from="Sydney"
+            data-to="Singapore"
+        >
 
             <h3>
                 Sydney → Singapore
@@ -232,6 +259,7 @@ require "config/database.php";
 
 
 <script src="js/script.js"></script>
+
 
 </body>
 
