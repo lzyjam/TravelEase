@@ -176,97 +176,202 @@ if ($from != "" && $to != "" && $dateInput != "") {
         <?php if (count($flights) > 0): ?>
 
 
-            <?php foreach ($flights as $flight): ?>
+            <!-- Filter and Sort Controls -->
+
+            <div class="filter-box">
 
 
-                <div class="deal-card"
-                     style="margin-bottom: 20px;">
+                <div class="form-group">
 
+                    <label for="sortFlights">
+                        Sort by
+                    </label>
 
-                    <h2>
-                        <?= htmlspecialchars($flight["FlightNumber"]) ?>
-                    </h2>
+                    <select id="sortFlights">
 
+                        <option value="price-low">
+                            Price: Low to High
+                        </option>
 
-                    <p>
+                        <option value="price-high">
+                            Price: High to Low
+                        </option>
 
-                        <?= htmlspecialchars($flight["Departure"]) ?>
+                        <option value="departure-early">
+                            Departure: Earliest
+                        </option>
 
-                        →
+                        <option value="departure-late">
+                            Departure: Latest
+                        </option>
 
-                        <?= htmlspecialchars($flight["Destination"]) ?>
-
-                    </p>
-
-
-                    <p>
-
-                        <strong>Departure:</strong>
-
-                        <?= htmlspecialchars($flight["DepartureTime"]) ?>
-
-                    </p>
-
-
-                    <p>
-
-                        <strong>Arrival:</strong>
-
-                        <?= htmlspecialchars($flight["ArrivalTime"]) ?>
-
-                    </p>
-
-
-                    <p>
-
-                        <strong>Stops:</strong>
-
-                        <?= htmlspecialchars($flight["Stops"]) ?>
-
-                    </p>
-
-
-                    <p>
-
-                        <strong>Baggage:</strong>
-
-                        <?= htmlspecialchars($flight["Baggage"]) ?>
-
-                    </p>
-
-
-                    <p>
-
-                        <strong>Available Seats:</strong>
-
-                        <?= htmlspecialchars($flight["AvailableSeats"]) ?>
-
-                    </p>
-
-
-                    <div class="price">
-
-                        $<?= htmlspecialchars($flight["Price"]) ?>
-
-                    </div>
-
-
-                    <br>
-
-
-                    <a href="booking.php?flight_id=<?= $flight["FlightID"] ?>">
-
-                        <button type="button">
-                            Book Now
-                        </button>
-
-                    </a>
-
+                    </select>
 
                 </div>
 
 
-            <?php endforeach; ?>
+                <div class="form-group">
+
+                    <label for="filterStops">
+                        Stops
+                    </label>
+
+                    <select id="filterStops">
+
+                        <option value="all">
+                            All Flights
+                        </option>
+
+                        <option value="direct">
+                            Direct Only
+                        </option>
+
+                        <option value="1">
+                            1 Stop
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+            <p id="flightCount">
+
+                <?= count($flights) ?> flights found
+
+            </p>
+
+
+            <!-- Flight Cards -->
+
+            <div id="flightList">
+
+
+                <?php foreach ($flights as $flight): ?>
+
+
+                    <?php
+
+                    $departureTimestamp =
+                        strtotime($flight["DepartureTime"]);
+
+                    ?>
+
+
+                    <div class="deal-card flight-card"
+
+                         data-price="<?= htmlspecialchars($flight["Price"]) ?>"
+
+                         data-departure="<?= $departureTimestamp ?>"
+
+                         data-stops="<?= htmlspecialchars($flight["Stops"]) ?>">
+
+
+                        <h2>
+                            <?= htmlspecialchars($flight["FlightNumber"]) ?>
+                        </h2>
+
+
+                        <p>
+
+                            <?= htmlspecialchars($flight["Departure"]) ?>
+
+                            →
+
+                            <?= htmlspecialchars($flight["Destination"]) ?>
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>Departure:</strong>
+
+                            <?= htmlspecialchars($flight["DepartureTime"]) ?>
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>Arrival:</strong>
+
+                            <?= htmlspecialchars($flight["ArrivalTime"]) ?>
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>Stops:</strong>
+
+                            <?= htmlspecialchars($flight["Stops"]) ?>
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>Baggage:</strong>
+
+                            <?= htmlspecialchars($flight["Baggage"]) ?>
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>Available Seats:</strong>
+
+                            <?= htmlspecialchars($flight["AvailableSeats"]) ?>
+
+                        </p>
+
+
+                        <div class="price">
+
+                            $<?= htmlspecialchars($flight["Price"]) ?>
+
+                        </div>
+
+
+                        <br>
+
+
+                        <a href="booking.php?flight_id=<?= $flight["FlightID"] ?>">
+
+                            <button type="button">
+                                Book Now
+                            </button>
+
+                        </a>
+
+
+                    </div>
+
+
+                <?php endforeach; ?>
+
+
+            </div>
+
+
+            <div id="noFilterResults"
+                 class="deal-card"
+                 style="display: none;">
+
+                <h3>
+                    No flights match your filters.
+                </h3>
+
+                <p>
+                    Please change the filter options and try again.
+                </p>
+
+            </div>
 
 
         <?php else: ?>
@@ -296,6 +401,9 @@ if ($from != "" && $to != "" && $dateInput != "") {
 
 
 </section>
+
+
+<script src="js/script.js"></script>
 
 
 </body>

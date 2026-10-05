@@ -9,7 +9,11 @@ body {
     color: #222;
 }
 
-/* Navigation */
+
+/* =========================
+   Navigation
+   ========================= */
+
 header {
     background: #1565c0;
     color: white;
@@ -24,13 +28,31 @@ header {
     font-weight: bold;
 }
 
+nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
 nav a {
     color: white;
     text-decoration: none;
     margin-left: 25px;
 }
 
-/* Main banner */
+nav span {
+    margin-left: 25px;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================
+   Main Banner
+   ========================= */
+
 .hero {
     background: #e3f2fd;
     text-align: center;
@@ -46,14 +68,18 @@ nav a {
     color: #555;
 }
 
-/* Search box */
+
+/* =========================
+   Search Box
+   ========================= */
+
 .search-box {
     background: white;
     max-width: 950px;
     margin: -20px auto 40px;
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
 }
 
 .search-form {
@@ -72,12 +98,26 @@ label {
     font-weight: bold;
 }
 
-input {
+input,
+select {
     width: 100%;
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    background: white;
+    font-size: 15px;
 }
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #1565c0;
+}
+
+
+/* =========================
+   Buttons
+   ========================= */
 
 button {
     background: #ff9800;
@@ -93,7 +133,11 @@ button:hover {
     background: #e68900;
 }
 
-/* Deals */
+
+/* =========================
+   Main Content / Deals
+   ========================= */
+
 .deals {
     max-width: 950px;
     margin: auto;
@@ -110,11 +154,122 @@ button:hover {
     flex: 1;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .price {
     color: #1565c0;
     font-size: 22px;
     font-weight: bold;
+}
+
+
+/* =========================
+   Flight Results
+   ========================= */
+
+.flight-card {
+    transition: box-shadow 0.2s ease,
+                transform 0.2s ease;
+}
+
+.flight-card:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   Filter and Sort
+   ========================= */
+
+.filter-box {
+    background: white;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    display: flex;
+    gap: 20px;
+    align-items: end;
+}
+
+.filter-box .form-group {
+    flex: 1;
+}
+
+.filter-box label {
+    color: #333;
+    font-size: 14px;
+}
+
+.filter-box select {
+    cursor: pointer;
+}
+
+#flightCount {
+    font-weight: bold;
+    color: #555;
+    margin: 20px 0 15px;
+}
+
+#noFilterResults {
+    margin-top: 20px;
+}
+
+
+/* =========================
+   Responsive Design
+   ========================= */
+
+@media (max-width: 700px) {
+
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 18px 20px;
+    }
+
+    nav {
+        margin-top: 15px;
+        gap: 12px;
+    }
+
+    nav a,
+    nav span {
+        margin-left: 0;
+        margin-right: 15px;
+    }
+
+    .hero {
+        padding: 40px 20px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+
+    .search-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .deal-container {
+        flex-direction: column;
+    }
+
+    .filter-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-box .form-group {
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
+    }
+
 }
