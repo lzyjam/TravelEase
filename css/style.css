@@ -1,0 +1,120 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    color: #222;
+}
+
+/* Navigation */
+header {
+    background: #1565c0;
+    color: white;
+    padding: 18px 8%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 25px;
+}
+
+/* Main banner */
+.hero {
+    background: #e3f2fd;
+    text-align: center;
+    padding: 55px 20px;
+}
+
+.hero h1 {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    color: #555;
+}
+
+/* Search box */
+.search-box {
+    background: white;
+    max-width: 950px;
+    margin: -20px auto 40px;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+}
+
+.search-form {
+    display: flex;
+    gap: 15px;
+    align-items: end;
+}
+
+.form-group {
+    flex: 1;
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background: #ff9800;
+    color: white;
+    border: none;
+    padding: 13px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #e68900;
+}
+
+/* Deals */
+.deals {
+    max-width: 950px;
+    margin: auto;
+    padding: 20px;
+}
+
+.deal-container {
+    display: flex;
+    gap: 20px;
+}
+
+.deal-card {
+    background: white;
+    flex: 1;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.price {
+    color: #1565c0;
+    font-size: 22px;
+    font-weight: bold;
+}
