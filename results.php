@@ -10,36 +10,38 @@ $dateInput = $_GET["date"] ?? "";
 
 $flights = [];
 $searched = false;
+$errorMessage = "";
 
+if ($from !== "" && $to !== "" && $dateInput !== "") {
+    $searched = true;
 
-if ($from != "" && $to != "" && $dateInput != "") {
+    if (strcasecmp(trim($from), trim($to)) === 0) {
+        $errorMessage = "Departure and destination cannot be the same.";
+    } else {
+        $dateObject = DateTime::createFromFormat("!d/m/Y", $dateInput);
+        $dateErrors = DateTime::getLastErrors();
 
-    $dateObject = DateTime::createFromFormat(
-        "d/m/Y",
-        $dateInput
-    );
-
-    if ($dateObject) {
-
-        $date = $dateObject->format("Y-m-d");
-
-        $sql = "SELECT * FROM flights
-                WHERE Departure = ?
-                AND Destination = ?
-                AND DepartureDate = ?
-                ORDER BY Price ASC";
-
-        $stmt = $pdo->prepare($sql);
-
-        $stmt->execute([
-            $from,
-            $to,
-            $date
-        ]);
-
-        $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $searched = true;
+        if (!$dateObject ||
+            ($dateErrors !== false &&
+             ($dateErrors["warning_count"] > 0 || $dateErrors["error_count"] > 0)) ||
+            $dateObject->format("d/m/Y") !== $dateInput) {
+            $errorMessage = "Please enter a valid departure date (DD/MM/YYYY).";
+        } else {
+            $today = new DateTime("today");
+            if ($dateObject < $today) {
+                $errorMessage = "Departure date cannot be in the past.";
+            } else {
+                $date = $dateObject->format("Y-m-d");
+                $sql = "SELECT * FROM flights
+                        WHERE Departure = ?
+                        AND Destination = ?
+                        AND DepartureDate = ?
+                        ORDER BY Price ASC";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$from, $to, $date]);
+                $flights = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+        }
     }
 }
 
@@ -163,7 +165,12 @@ if ($from != "" && $to != "" && $dateInput != "") {
     </div>
 
 
-    <?php if (!$searched): ?>
+    <?php if ($errorMessage !== ""): ?>
+        <div class="deal-card" role="alert">
+            <p><strong><?= htmlspecialchars($errorMessage) ?></strong></p>
+            <a href="index.php">Back to Search</a>
+        </div>
+    <?php elseif (!$searched): ?>
 
 
         <div class="deal-card">
